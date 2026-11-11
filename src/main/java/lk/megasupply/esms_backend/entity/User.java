@@ -1,5 +1,6 @@
 package lk.megasupply.esms_backend.entity;
 
+import lk.megasupply.esms_backend.enums.Designation;
 import lk.megasupply.esms_backend.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,31 +27,42 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String fullName;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 20)
     private String nicNumber;
 
-    @Column(unique = true)
+    @Column(unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false, unique = true)
+    @Column(length = 15)
+    private String phoneNumber;
+
+    @Column(nullable = false, unique = true, length = 50)
     private String username;
 
     @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private Designation designation;
+
     @Builder.Default
+    @Column(nullable = false)
     private boolean isActive = true;
 
     @CreationTimestamp
     @Column(updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -75,15 +87,5 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return isActive;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
     }
 }

@@ -7,7 +7,9 @@ public class UserCreateDto {
     private String fullName;
     private String nicNumber;
     private String email;
+    private String phoneNumber;
     private String username;
     private String password;
     private String role;
+    private String designation;
 }

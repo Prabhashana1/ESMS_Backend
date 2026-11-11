@@ -5,6 +5,7 @@ import lk.megasupply.esms_backend.dto.UserCreateDto;
 import lk.megasupply.esms_backend.dto.UserDto;
 import lk.megasupply.esms_backend.dto.UserUpdateDto;
 import lk.megasupply.esms_backend.entity.User;
+import lk.megasupply.esms_backend.enums.Designation;
 import lk.megasupply.esms_backend.enums.Role;
 import lk.megasupply.esms_backend.exception.ResourceNotFoundException;
 import lk.megasupply.esms_backend.repository.UserRepository;
@@ -29,9 +30,11 @@ public class UserServiceImpl implements UserService {
         user.setFullName(createDto.getFullName());
         user.setNicNumber(createDto.getNicNumber());
         user.setEmail(createDto.getEmail());
+        user.setPhoneNumber(createDto.getPhoneNumber());
         user.setUsername(createDto.getUsername());
         user.setPassword(passwordEncoder.encode(createDto.getPassword()));
         user.setRole(Role.valueOf(createDto.getRole().toUpperCase()));
+        user.setDesignation(Designation.valueOf(createDto.getDesignation().toUpperCase()));
         user.setActive(true);
 
         User savedUser = userRepository.save(user);
@@ -41,7 +44,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserById(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id)); // නිවැරදි HTTP 404 Error එක යවයි
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         return mapToDto(user);
     }
 
@@ -64,16 +67,20 @@ public class UserServiceImpl implements UserService {
         user.setFullName(updateDto.getFullName());
         user.setNicNumber(updateDto.getNicNumber());
         user.setEmail(updateDto.getEmail());
+        user.setPhoneNumber(updateDto.getPhoneNumber());
 
         if (updateDto.getRole() != null) {
             user.setRole(Role.valueOf(updateDto.getRole().toUpperCase()));
+        }
+
+        if (updateDto.getDesignation() != null) {
+            user.setDesignation(Designation.valueOf(updateDto.getDesignation().toUpperCase()));
         }
 
         User updatedUser = userRepository.save(user);
         return mapToDto(updatedUser);
     }
 
-    // අලුත්: User කෙනෙක්ව Active හෝ Deactivate කිරීම
     @Override
     public UserDto changeUserStatus(Long id, boolean isActive) {
         User user = userRepository.findById(id)
@@ -84,7 +91,6 @@ public class UserServiceImpl implements UserService {
         return mapToDto(updatedUser);
     }
 
-    // අලුත්: Password එක පමණක් වෙනස් කිරීම
     @Override
     public void resetPassword(Long id, PasswordResetDto passwordResetDto) {
         User user = userRepository.findById(id)
@@ -100,9 +106,12 @@ public class UserServiceImpl implements UserService {
         dto.setFullName(user.getFullName());
         dto.setNicNumber(user.getNicNumber());
         dto.setEmail(user.getEmail());
+        dto.setPhoneNumber(user.getPhoneNumber());
         dto.setUsername(user.getUsername());
-        dto.setRole(user.getRole().name());
+        dto.setRole(user.getRole() != null ? user.getRole().name() : null);
+        dto.setDesignation(user.getDesignation() != null ? user.getDesignation().name() : null);
         dto.setActive(user.isActive());
+        dto.setCreatedAt(user.getCreatedAt());
         return dto;
     }
 }
